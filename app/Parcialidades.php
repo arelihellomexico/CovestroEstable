@@ -27,9 +27,6 @@ class Parcialidades extends Model
         "impuesto",
         "total_impuesto",
         "residencia",
-        "USOCFDI",
-        "TASAIVA",
-        "TASARETENCION"
     ];
 
     public $timestamps = false;

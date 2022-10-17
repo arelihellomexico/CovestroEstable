@@ -26,9 +26,6 @@ class SAP_Layout_Model extends Model
         "ASSIGNMENT",
         "MONTOPAGOMXN",
         "IMPUESTO",
-        "USOCFDI",
-		"TASAIVA",
-		"TASARETENCION",
     ];
     
     public $timestamps = false;

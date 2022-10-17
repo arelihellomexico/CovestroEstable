@@ -40,9 +40,6 @@ class Pagos extends Model
 		"id_cliente",
 		"timbrado",
 		"id_es",
-		"USOCFDI",
-		"TASAIVA",
-		"TASARETENCION",
     ];
 
     public $timestamps = false;

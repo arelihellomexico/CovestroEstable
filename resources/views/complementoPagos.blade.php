@@ -42,10 +42,6 @@
           <th class="text-muted text-center txt-thead">RFCCTAORD</th>
           <th class="text-muted text-center txt-thead">BANCOORDEXT</th>
           <th class="text-muted text-center txt-thead">CTAORD</th>
-          <th class="text-muted text-center txt-thead">USOCFDI</th>
-          <th class="text-muted text-center txt-thead">REGIMEN</th>
-          <th class="text-muted text-center txt-thead">TASAIVA</th>
-          <th class="text-muted text-center txt-thead">TASARETENCION</th>
           <th class="text-muted text-center txt-thead">Observación</th>
         </tr>
       </thead>
@@ -66,11 +62,6 @@
           <td class="text-muted text-center txt-tbody">{{$cor->rfcctaord}}</td>
           <td class="text-muted text-center txt-tbody">{{$cor->bancoordext}}</td>
           <td class="text-muted text-center txt-tbody">{{$cor->ctaord}}</td>
-          <td class="text-muted text-center txt-tbody">{{$cor->USOCFDI}}</td>
-          <td class="text-muted text-center txt-tbody">{{$cor->regimen}}</td>
-          <td class="text-muted text-center txt-tbody">{{$cor->TASAIVA}}</td>
-          <td class="text-muted text-center txt-tbody">{{$cor->TASARETENCION}}</td>
-          <th class="text-muted text-center txt-thead">Observación</th>
           <td class="text-muted text-center txt-tbody"></td>
         </tr>
         @else

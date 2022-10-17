@@ -26,9 +26,6 @@ class Covestro_Model extends Model
 		"version_fiscal",
 		"metpago",
 		"usar_credito",
-		"USOCFDI",
-        "TASAIVA",
-        "TASARETENCION",
     ];
 
     public $timestamps = false;

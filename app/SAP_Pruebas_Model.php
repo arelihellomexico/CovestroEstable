@@ -39,9 +39,6 @@ class SAP_Pruebas_Model extends Model
         "FOLIOS",
         "ID_DOC",
         "usuario",
-        "USOCFDI",
-		"TASAIVA",
-		"TASARETENCION",
     ];
 
     public $timestamps = false;

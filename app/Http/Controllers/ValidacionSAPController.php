@@ -95,9 +95,7 @@ class ValidacionSAPController extends Controller
 					$REFERENCE = $lay->REFERENCE;
 					$NUMREGIDTRIB = $lay->NUMREGIDTRIB;
 					$TAX =  $lay->IMPUESTO;
-					$USOCFDI =  $lay->USOCFDI; 
-					$TASAIVA = $lay->TASAIVA;
-					$TASARETENCION = $lay->TASARETENCION;
+
 
 					$covestro = DB::table("covestro")
 						->first();
@@ -160,9 +158,6 @@ class ValidacionSAPController extends Controller
 							$sap->ASSIGNMENT = $row[$ASSIGNMENT];
 							$sap->REFERENCE = $row[$REFERENCE];
 							$sap->TAX = $row[$TAX];
-							$sap->USOCFDI = $row[$USOCFDI]; //Aqui se modifico
-							$sap->TASAIVA = $row[$TASAIVA];
-							$sap->TASARETENCION = $row[$TASARETENCION];
 							$sap->FOLIOS = substr($row[$FOLIOS], -7);
 							$sap->ID_DOC = substr($row[$FOLIOS], -7);
 							$sap->PARCIAL = $row[$PARCIAL];
@@ -190,9 +185,6 @@ class ValidacionSAPController extends Controller
 							$sap->TIPOCAMBIOP = str_replace("-", "", $row[$TIPOCAMBIOP]);
 							$sap->TIPODOC = $row[$TIPODOC];
 							$sap->FECHADOC = $row[$FECHAPAGO];
-							$sap->USOCFDI = $row[$USOCFDI];// Aqui se modifico
-							$sap->TASAIVA = $row[$TASAIVA];
-							$sap->TASARETENCION = $row[$TASARETENCION];
 							$sap->FOLIOS = substr($row[$FOLIOS], -7);
 							$sap->ID_DOC = substr($row[$FOLIOS], -7);
 							$sap->PARCIAL = $row[$PARCIAL];
@@ -378,9 +370,6 @@ class ValidacionSAPController extends Controller
 						$pago->nombre_e = $p->NOMBRE_E;
 						$pago->id_cliente = $p->id_cliente;
 						$pago->timbrado = "0";
-						$pago->USOCFDI = $p->USOCFDI;//Aqui se modifico tabla temporal_SAP
-						$pago->TASAIVA = $p->TASAIVA;
-						$pago->TASARETENCION = $p->TASARETENCION;
 						$pago->id_es = $p->CADENAP;
 						$pago->save();
 
@@ -393,8 +382,8 @@ class ValidacionSAPController extends Controller
 						//->where("usuario", "=", Session::get("usuario"))
 						->where("clearing_document", "=", $p->FOLIO)
 						->first();
-						
-					    $cosa = $hoja2->clearing_document;*/
+
+					$cosa = $hoja2->clearing_document;*/
 
 						$hoja2 = DB::table("bancos_sap")
 							//->where("usuario", "=", Session::get("usuario"))
@@ -423,7 +412,6 @@ class ValidacionSAPController extends Controller
 							->where("clearing_document", "=", $p->FOLIO)
 							->get();
 
-							
 						foreach ($cr2 as $c) {
 							if ($hoja2moneda != "" && $c->moneda != $monedita) {
 								try {
@@ -524,9 +512,6 @@ class ValidacionSAPController extends Controller
 					$pago->nombre_e = $p->NOMBRE_E;
 					$pago->timbrado = "0";
 					$pago->id_es = $p->CADENAP;
-					$pago->USOCFDI = $p->USOCFDI; //Aqui se modifico
-					$pago->TASAIVA = $p->TASAIVA;
-					$pago->TASARETENCION = $p->TASARETENCION;
 					$pago->save();
 				} elseif ($p->TIPODOC ==  "AB") {
 					$hay = DB::table("parcialidades")
@@ -591,9 +576,6 @@ class ValidacionSAPController extends Controller
 							} else {
 								$parcial->tipo_cambio_bancos = "1.00";
 							}
-							$parcial->USOCFDI = $p->USOCFDI;
-							$parcial->TASAIVA = $p->TASAIVA;
-							$parcial->TASARETENCION = $p->TASARETENCION;
 							$parcial->save();
 							$existe = DB::table('factura')
 								->where('folio', '=', $p->FOLIOS)
@@ -627,8 +609,6 @@ class ValidacionSAPController extends Controller
 							$parcial->rfc_c = $p->RFC_R;
 							$parcial->nombre_c = $p->NOMBRE_R;
 							$parcial->id_es = $p->CADENAP;
-							
-						
 							if ($p->tax == "A3" || $p->tax == "A9") {
 								$parcial->tipo_impuesto = 16;
 							} else {
@@ -648,9 +628,6 @@ class ValidacionSAPController extends Controller
 							} else {
 								$parcial->tipo_cambio_bancos = "1.00";
 							}
-							$parcial->USOCFDI = $p->USOCFDI;
-							$parcial->TASAIVA = $p->TASAIVA;
-							$parcial->TASARETENCION = $p->TASARETENCION;
 							$parcial->save();
 
 							$existe = DB::table('factura')
@@ -732,9 +709,6 @@ class ValidacionSAPController extends Controller
 						$factura->nombre_c = $p->NOMBRE_R;
 						$factura->residencia = $p->RESIDENCIAFISCAL;
 						$factura->clearings = $p->FOLIO;
-						$factura->USOCFDI = $p->USOCFDI;
-						$factura->TASAIVA = $p->TASAIVA;
-						$factura->TASARETENCION = $p->TASARETENCION;
 						$factura->save();
 					} else {
 						$varios = DB::table("factura")
@@ -958,7 +932,6 @@ class ValidacionSAPController extends Controller
 						"id_es" => Session::get("num_archivo")
 					]);
 			} catch (\Exception $gh) {
-				echo "error1";
 				$sieteactual = $gh->getMessage();
 			}
 
@@ -969,7 +942,6 @@ class ValidacionSAPController extends Controller
 						"integrado" => 0
 					]);
 			} catch (\Exception $jk) {
-				echo "error2";
 				$ochoactual = $jk->getMessage();
 			}
 			try {
@@ -977,7 +949,6 @@ class ValidacionSAPController extends Controller
 					->where('usuario', '=', Session::get('user'))
 					->count();
 			} catch (\Exception $clo) {
-				echo "error3";
 				$mostrar = $clo->getMessage();
 			}
 
@@ -987,7 +958,6 @@ class ValidacionSAPController extends Controller
 						->where('usuario', '=', Session::get('user'))
 						->delete();
 				} catch (\Exception $th) {
-					echo "error4";
 					$mostrar2 = $th->getMessage();
 				}
 
@@ -1012,7 +982,6 @@ class ValidacionSAPController extends Controller
 						->where("integrado", "=", 3)
 						->delete();
 				} catch (\Exception $xr) {
-					echo "error5";
 					$ques = $xr->getMessage();
 				}
 
@@ -1033,7 +1002,6 @@ class ValidacionSAPController extends Controller
 				]);
 			}
 		} catch (\Exception $haber) {
-			echo "error6";
 			$mensaje = $haber->getMessage();
 			return response()->json([
 				"respuesta" => "2",
@@ -1143,9 +1111,7 @@ class ValidacionSAPController extends Controller
 						$REFERENCE = 'reference';
 						$NUMREGIDTRIB = 'numregidtrib';
 						$TAX =  'tax';
-						$USOCFDI = 'usocfdi';
-						$TASAIVA = 'tasaiva';
-						$TASARETENCION = 'tasaretencion';
+
 
 						$covestro = DB::table("covestro")
 							->first();
@@ -1214,9 +1180,6 @@ class ValidacionSAPController extends Controller
 								$sap->CADENAP = Session::get('num_archivo');
 								$sap->SELLOP = Session::get('nombre_archivo_sap');
 								$sap->usuario = Session::get('user');
-								$sap->USOCFDI = $row[$USOCFDI];
-								$sap->TASAIVA = $row[$TASAIVA];
-								$sap->TASARETENCION = $row[$TASARETENCION];
 								$sap->save();
 							} else {
 								$sap = new SAP_Pruebas_Model;
@@ -1245,9 +1208,6 @@ class ValidacionSAPController extends Controller
 								$sap->CADENAP = Session::get('num_archivo');
 								$sap->SELLOP = Session::get('nombre_archivo_sap');
 								$sap->usuario = Session::get('user');
-								$sap->USOCFDI = $row[$USOCFDI];
-								$sap->TASAIVA = $row[$TASAIVA];
-								$sap->TASARETENCION = $row[$TASARETENCION];
 								$sap->save();
 							}
 						}

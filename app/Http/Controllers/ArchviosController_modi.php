@@ -250,9 +250,6 @@ class ArchviosController extends Controller
 										$complemento->timbrado = "1";
 										$complemento->id_pro = $procesoNuevo;
 										$complemento->id_es = $s->id_es;
-										$complemento->USOCFDI = $s->USOCFDI;
-										$complemento->TASAIVA = $s->TASAIVA;
-										$complemento->TASARETENCION = $s->TASARETENCION;					
 										$complemento->save();
 
 										DB::table("pago")
@@ -549,9 +546,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("pago")
@@ -740,9 +734,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("pago")

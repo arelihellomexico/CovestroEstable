@@ -39,9 +39,6 @@ class Complemento extends Model
 		"timbrado",
 		"id_pro",
 		"id_es",
-		"USOCFDI",
-		"TASAIVA",
-		"TASARETENCION",	
     ];
 
     public $timestamps = false;

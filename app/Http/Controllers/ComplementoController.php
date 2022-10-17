@@ -140,21 +140,6 @@ class ComplementoController extends Controller
 						}
 					}
 				}
-				//IVA
-				//$IVA = $cor->MONTO*0.16;
-				//Fin IVA
-
-				//SUBTOTAL
-				//$SUBTOTAL = $cor->MONTO-$IVA;
-				//Fin SUBTOTAL
-
-				//RETENCION 
-				//$RETENCION = $IVA;
-				//Fin RETENCION
-				$IVA = $cor->montoP * $cor->TASAIVA;
-				$SUBTOTAL = $cor->montoP - $IVA;
-				$RETENCION =  $cor->TASARETENCION;
-				$TOTAL = $IVA + $SUBTOTAL;
 
 				$nombre_archivo = $ruta . "/" . $cor->rfc_c . "_" . $cor->clearing_document . ".txt"; //nombre del archivo
 				if (strlen($cor->fechap) == 23) {
@@ -172,9 +157,9 @@ class ComplementoController extends Controller
 					$fecha =  $cor->fechap;
 				}
 				if ($cor->residenciafiscal != null) { //si es nulo se crea el primer texto para el archivo txt
-					$mensaje = "CABPAGOS|" . $covestro->version_complemento . "||" . $cor->clearing_document . "|" . date("dmYHis") . "|" . $cor->regimen . "|" . $covestro->rfc_e . "|" . $covestro->nombre_e . "|" . $covestro->calle_e . "|" . $covestro->numext_e . "|" . $covestro->numint_e . "|" . $covestro->colonia_e . "|" . $covestro->localidad_e . "||" . $covestro->municipio_e . "|" . $covestro->estado_e . "|" . $covestro->pais_e . "|" . $covestro->cpostal_e . "|" . $covestro->cpostal_e . "|XEXX010101000|" . $cor->nombre_c . "|||||||||||" . $cor->residenciafiscal . "|" . $cor->numregidtrib . "|" . $cor->regimen . "|" . $cor->USOCFDI  ."|" . $cor->TASAIVA ."|" . $cor->TASARETENCION ."|".$SUBTOTAL ."|". $IVA ."|". $RETENCION ."|"."|\r\n";
+					$mensaje = "CABPAGOS|" . $covestro->version_complemento . "||" . $cor->clearing_document . "|" . date("dmYHis") . "|" . $cor->regimen . "|" . $covestro->rfc_e . "|" . $covestro->nombre_e . "|" . $covestro->calle_e . "|" . $covestro->numext_e . "|" . $covestro->numint_e . "|" . $covestro->colonia_e . "|" . $covestro->localidad_e . "||" . $covestro->municipio_e . "|" . $covestro->estado_e . "|" . $covestro->pais_e . "|" . $covestro->cpostal_e . "|" . $covestro->cpostal_e . "|XEXX010101000|" . $cor->nombre_c . "|||||||||||" . $cor->residenciafiscal . "|" . $cor->numregidtrib . "|\r\n";
 				} else {
-					$mensaje = "CABPAGOS|" . $covestro->version_complemento . "||" . $cor->clearing_document . "|" . date("dmYHis") . "|" . $cor->regimen . "|" . $covestro->rfc_e . "|" . $covestro->nombre_e . "|" . $covestro->calle_e . "|" . $covestro->numext_e . "|" . $covestro->numint_e . "|" . $covestro->colonia_e . "|" . $covestro->localidad_e . "||" . $covestro->municipio_e . "|" . $covestro->estado_e . "|" . $covestro->pais_e . "|" . $covestro->cpostal_e . "|" . $covestro->cpostal_e . "|" . $cor->rfc_c . "|" . $cor->nombre_c . "|||||||||||" . $cor->residenciafiscal . "|" . $cor->numregidtrib . "|" . "$cor->regimen". "|" .$cor->USOCFDI  ."|" . $cor->TASAIVA ."|" . $cor->TASARETENCION ."|".$SUBTOTAL ."|". $IVA ."|". $RETENCION ."|"."|\r\n";
+					$mensaje = "CABPAGOS|" . $covestro->version_complemento . "||" . $cor->clearing_document . "|" . date("dmYHis") . "|" . $cor->regimen . "|" . $covestro->rfc_e . "|" . $covestro->nombre_e . "|" . $covestro->calle_e . "|" . $covestro->numext_e . "|" . $covestro->numint_e . "|" . $covestro->colonia_e . "|" . $covestro->localidad_e . "||" . $covestro->municipio_e . "|" . $covestro->estado_e . "|" . $covestro->pais_e . "|" . $covestro->cpostal_e . "|" . $covestro->cpostal_e . "|" . $cor->rfc_c . "|" . $cor->nombre_c . "|||||||||||" . $cor->residenciafiscal . "|" . $cor->numregidtrib . "|\r\n";
 				}
 
 				foreach ($parcialidades as $f) { //no hace nada
@@ -706,9 +691,9 @@ class ComplementoController extends Controller
 					$fecha =  $cor->fechap;
 				}
 				if ($cor->residenciafiscal != null) { //si es nulo se crea el primer texto para el archivo txt
-					$mensaje = "CABPAGOS|" . $covestro->version_complemento . "||" . $cor->clearing_document . "|" . date("dmYHis") . "|" . $cor->regimen . "|" . $covestro->rfc_e . "|" . $covestro->nombre_e . "|" . $covestro->calle_e . "|" . $covestro->numext_e . "|" . $covestro->numint_e . "|" . $covestro->colonia_e . "|" . $covestro->localidad_e . "||" . $covestro->municipio_e . "|" . $covestro->estado_e . "|" . $covestro->pais_e . "|" . $covestro->cpostal_e . "|" . $covestro->cpostal_e . "|XEXX010101000|" . $cor->nombre_c . "|||||||||||" . $cor->residenciafiscal . "|" . $cor->numregidtrib . "|||" . $cor->REGIMEN . "|" . $cor->USOCFDI . "|\r\n"; //hola
+					$mensaje = "CABPAGOS|" . $covestro->version_complemento . "||" . $cor->clearing_document . "|" . date("dmYHis") . "|" . $cor->regimen . "|" . $covestro->rfc_e . "|" . $covestro->nombre_e . "|" . $covestro->calle_e . "|" . $covestro->numext_e . "|" . $covestro->numint_e . "|" . $covestro->colonia_e . "|" . $covestro->localidad_e . "||" . $covestro->municipio_e . "|" . $covestro->estado_e . "|" . $covestro->pais_e . "|" . $covestro->cpostal_e . "|" . $covestro->cpostal_e . "|XEXX010101000|" . $cor->nombre_c . "|||||||||||" . $cor->residenciafiscal . "|" . $cor->numregidtrib . "|\r\n";
 				} else {
-					$mensaje = "CABPAGOS|" . $covestro->version_complemento . "||" . $cor->clearing_document . "|" . date("dmYHis") . "|" . $cor->regimen . "|" . $covestro->rfc_e . "|" . $covestro->nombre_e . "|" . $covestro->calle_e . "|" . $covestro->numext_e . "|" . $covestro->numint_e . "|" . $covestro->colonia_e . "|" . $covestro->localidad_e . "||" . $covestro->municipio_e . "|" . $covestro->estado_e . "|" . $covestro->pais_e . "|" . $covestro->cpostal_e . "|" . $covestro->cpostal_e . "|" . $cor->rfc_c . "|" . $cor->nombre_c . "|||||||||||" . $cor->residenciafiscal . "|" . $cor->numregidtrib . "|||" . $cor->REGIMEN . "|" . $cor->USOCFDI . "|\r\n";
+					$mensaje = "CABPAGOS|" . $covestro->version_complemento . "||" . $cor->clearing_document . "|" . date("dmYHis") . "|" . $cor->regimen . "|" . $covestro->rfc_e . "|" . $covestro->nombre_e . "|" . $covestro->calle_e . "|" . $covestro->numext_e . "|" . $covestro->numint_e . "|" . $covestro->colonia_e . "|" . $covestro->localidad_e . "||" . $covestro->municipio_e . "|" . $covestro->estado_e . "|" . $covestro->pais_e . "|" . $covestro->cpostal_e . "|" . $covestro->cpostal_e . "|" . $cor->rfc_c . "|" . $cor->nombre_c . "|||||||||||" . $cor->residenciafiscal . "|" . $cor->numregidtrib . "|\r\n";
 				}
 
 				foreach ($parcialidades as $f) { //no hace nada

@@ -250,9 +250,6 @@ class ArchviosController extends Controller
 										$complemento->timbrado = "1";
 										$complemento->id_pro = $procesoNuevo;
 										$complemento->id_es = $s->id_es;
-										$complemento->USOCFDI = $S->USOCFDI;
-										$complemento->TASAIVA = $S->TASAIVA;
-										$complemento->TASARETENCION = $S->TASARETENCION;	
 										$complemento->save();
 
 										DB::table("pago")

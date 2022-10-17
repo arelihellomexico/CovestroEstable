@@ -537,10 +537,7 @@ class LayoutsController extends Controller
             "REFERENCE" => $request->get("reference"),
             "ASSIGNMENT" => $request->get("assignment"),
             "MONTOPAGOMXN" => $request->get("montomxn_pago"),
-            "IMPUESTO" => $request->get("impuesto"),
-            "USOCFDI" => $request->get("usocfdi"),//Aqui se modifico
-            "TASAIVA" => $request->get("tasaiva"),//Aqui se modifico
-            "TASARETENCION" => $request->get("tasaretencion"),//Aqui se modifico
+            "IMPUESTO" => $request->get("impuesto")
         ]);
 
         Session::put("LayoutSAP", $id);
@@ -607,10 +604,7 @@ class LayoutsController extends Controller
             "REFERENCE" => $request->get("reference"),
             "ASSIGNMENT" => $request->get("assignment"),
             "MONTOPAGOMXN" => $request->get("montomxn_pago"),
-            "IMPUESTO" => $request->get("impuesto"),
-            "USOCFDI" => $request->get("usocfdi"),//Aqui se modifico
-            "TASAIVA" => $request->get("tasaiva"),//Aqui se modifico
-            "TASARETENCION" => $request->get("tasaretencion"),//Aqui se modifico
+            "IMPUESTO" => $request->get("impuesto")
         ]);
 
         DB::table("bancos_p_SAP")

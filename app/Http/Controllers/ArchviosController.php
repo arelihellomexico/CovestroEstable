@@ -77,9 +77,6 @@ class ArchviosController extends Controller
 
 	public function integrarComplemento(Request $request)
 	{
-		echo "Entre aqui 1";
-		try {
-			echo "Entre aqui 2";
 		$busquedaSAP = "";
 		$busquedaTeso = "";
 		$busquedaCred = "";
@@ -95,14 +92,13 @@ class ArchviosController extends Controller
 
 		$cuantosProcesos = DB::table('procesos')
 			->max('id_pro');
-			
+
 		$proceso = DB::table('procesos')
 			->where('id_pro', '=', $proceso) //----cambiar la variable
 			->first();
-			echo "Entre aqui 3";
+
 		if ($cuantosProcesos != 0) { //cual es el proposito para esta condicion
-			echo "Entre aqui bien"; 
-				if ($proceso->integracion == 1) {
+			if ($proceso->integracion == 1) {
 				DB::table("complemento")
 					->where("id_pro", "=", $proceso->id_pro)
 					->delete();
@@ -123,51 +119,38 @@ class ArchviosController extends Controller
 			}
 		}
 
-		echo "Entre aqui bien 100";
 		$archivosSAP = DB::table('excel_SAP')
 			->get();
-		echo "Entre aqui bien 200";
+
 		$archivosTeso = DB::table('excel_tesoreria')
 			->get();
-		echo "Entre aqui bien 300";
+
 		$archivosCred = DB::table('excel_credito')
 			->get();
-		echo "Entre aqui bien 400";
+
 		$bancosSAP = DB::table("bancos_SAP")
 			->get();
-		echo "Entre aqui bien 101";
 
-		try {
-			foreach ($archivosSAP as $sap) { //para todos los archivos que hay en la tabla excel_SAP
-				echo "Entre aqui bien 2";
-				if ($request->has('sap' . $sap->id_es)) { //si existe un elemento o valor
-					echo "Entre aqui bien 3";
-					$busquedaSAP .= "id_es = " . $sap->id_es . " or ";
-					$bs .= $sap->id_es . ",";
-				}
+		foreach ($archivosSAP as $sap) { //para todos los archivos que hay en la tabla excel_SAP
+			if ($request->has('sap' . $sap->id_es)) { //si existe un elemento o valor
+				$busquedaSAP .= "id_es = " . $sap->id_es . " or ";
+				$bs .= $sap->id_es . ",";
 			}
-			$busquedaSAP .= "a"; //se le asigna un texto como este:id_es=12 or a
-			foreach ($archivosTeso as $teso) {
-				echo "Entre aqui bien 4";
-				if ($request->has('teso' . $teso->id_et)) {
-					echo "Entre aqui bien 5";
-					$busquedaTeso .= "id_et = " . $teso->id_et . " or ";
-					$bt .= $teso->id_et . ",";
-				}
-			}
-			$busquedaTeso .= "a"; //se le asigna un texto como este:id_et=12 or a
-			foreach ($archivosCred as $cred) {
-				echo "Entre aqui bien 6";
-				if ($request->has('cred' . $cred->id_ec)) {
-					echo "Entre aqui bien 7";
-					$busquedaCred .= "id_ec = " . $cred->id_ec . " or ";
-					$bc .= $cred->id_ec . ",";
-				}
-			}
-		} catch (\Exception $th) {
-			echo 'Aqui esta el error:',  $th->getMessage();
 		}
-		
+		$busquedaSAP .= "a"; //se le asigna un texto como este:id_es=12 or a
+		foreach ($archivosTeso as $teso) {
+			if ($request->has('teso' . $teso->id_et)) {
+				$busquedaTeso .= "id_et = " . $teso->id_et . " or ";
+				$bt .= $teso->id_et . ",";
+			}
+		}
+		$busquedaTeso .= "a"; //se le asigna un texto como este:id_et=12 or a
+		foreach ($archivosCred as $cred) {
+			if ($request->has('cred' . $cred->id_ec)) {
+				$busquedaCred .= "id_ec = " . $cred->id_ec . " or ";
+				$bc .= $cred->id_ec . ",";
+			}
+		}
 		$busquedaCred .= "a";
 
 		$busquedaSAP = str_replace("or a", "", $busquedaSAP);
@@ -201,22 +184,17 @@ class ArchviosController extends Controller
 			->get(); //se obtiene un arreglo de la tabla pago  donde id_es=algo
 
 		foreach ($sap as $sa) { //los pagos que se buscan con el id_es
-			echo "Entre aqui bien 8";
 			$ex = false;
 			foreach ($bancosSAP as $b) { //todos las filas de la tabla bancos_SAP
-				echo "Entre aqui bien 9";
 				if ($ex == false && $sa->clearing_document == $b->clearing_document) { //si hay similitud en el clerin_folio de las columnas: clearing_document que se encuentran en las tablas bancos_SAP y pago
 					$ex = true;
-					echo "Entre aqui bien 10";
 					if ($sa->monedaP != "MXN") { // si la moneda es diferente de mx asigna el monto en dolares
-						echo "Entre aqui bien 11";
 						DB::table("pago")
 							->where("clearing_document", "=", $sa->clearing_document)
 							->update([
 								"montoP" => $b->monto
 							]);
 					} else { // se asigna en monto en pesos mexicanos
-						echo "Entre aqui bien 12";
 						DB::table("pago")
 							->where("clearing_document", "=", $sa->clearing_document)
 							->update([
@@ -233,11 +211,8 @@ class ArchviosController extends Controller
 			->get();
 
 		if ($covestro->usar_credito == 1) {
-			echo "Entre aqui bien 13";
 			foreach ($sap as $s) {
-				echo "Entre aqui bien 14";
 				if ($s->reference == "Remisión" || $s->reference == "remisión" || $s->formap == "17" || $s->formap == 17) {
-					echo "Entre aqui bien 15";
 					$fechaar = str_replace(".", "", $s->fechadoc);
 					$fechaar = $fechaar . "120000";
 					$complemento = new Complemento;
@@ -251,10 +226,8 @@ class ArchviosController extends Controller
 					$complemento->numregidtrib = $s->numregidtrib;
 					$complemento->confirmacion = $s->confirmacion;
 					if ($s->reference == "Remisión" || $s->reference == "remisión") {
-						echo "Entre aqui bien 16";
 						$complemento->formap = "25";
 					} else {
-						echo "Entre aqui bien 17";
 						$complemento->formap = $s->formap;
 					}
 					$complemento->monedaP = $s->monedaP;
@@ -277,16 +250,12 @@ class ArchviosController extends Controller
 					$complemento->timbrado = "1";
 					$complemento->id_pro = $procesoNuevo;
 					$complemento->id_es = $s->id_es;
-					$complemento->USOCFDI = $s->USOCFDI;
-					$complemento->TASAIVA = $s->TASAIVA;
-					$complemento->TASARETENCION = $s->TASARETENCION;
 					$complemento->save();
 
 					DB::table("pago")
 						->where('id_pago', '=', $s->id_pago)
 						->update(["timbrado" => "1"]);
 				} elseif ($s->rfc_c != "") {
-					echo "Entre aqui bien 18";
 					//CREDITO NO MANEJA
 					/*
 			    		$documents = DB::table("credito")
@@ -306,7 +275,6 @@ class ArchviosController extends Controller
 						}*/
 					$refer_documents = false;
 					if ($refer_documents == false) {
-						echo "Entre aqui bien 19";
 						$documents = DB::table("facturas_liquidadas")
 							->where("clearing_document", "=", $s->clearing_document)
 							->whereRaw(DB::raw('(' . $busquedaSAP . ')'))
@@ -315,34 +283,26 @@ class ArchviosController extends Controller
 						//$refer_documents = false; 9-03-2021
 
 						foreach ($documents as $doc) {
-							echo "Entre aqui bien 20";
 							if ($doc->folio != 0 && $doc->folio != "0" && $doc->folio != "" && !is_null($doc->folio) && $doc->folio != "0" && $doc->folio != "#") { // si no es nulo
-								echo "Entre aqui bien 21";
 								$refer_documents = false;
 							} else {
-								echo "Entre aqui bien 22";
 								$refer_documents = true;
 							}
 						}
 					}
 
 					if ($refer_documents == false) {
-						echo "Entre aqui bien 23";
+
 						//Existe RFC o nombre de cliente en pago de SAP
 						$tesoreria = DB::table("tesoreria")
 							->whereRaw(DB::raw('(' . $busquedaTeso . ')'))
 							->get();
 
 						foreach ($tesoreria as $teso) {
-							echo "Entre aqui bien 24";
 							if ($teso->RFC_R != "" && !is_null($teso->RFC_R)) { //Existe cliente en pago de tesoreria, ya sea RFC o nombre del cliente
-								echo "Entre aqui bien 25";
 								if ($s->rfc_c == $teso->RFC_R) { //Coincide el RFC, se va a comparar monto y moneda
-									echo "Entre aqui bien 26";
 									if ($s->montoP == $teso->MONTOP) { //Coinciden los montos, se va a comparar moneda
-										echo "Entre aqui bien 27";
 										if ($s->monedaP == $teso->MONEDAP) { //Coincide la moneda. Se va a similaridades.
-											echo "Entre aqui bien 28";
 											$simi = new Similaridades;
 											$simi->id_tt = $teso->id_tt;
 											$simi->RFC_R = $teso->RFC_R;
@@ -360,13 +320,9 @@ class ArchviosController extends Controller
 										}
 									}
 								} else {
-									echo "Entre aqui bien 29";
 									if ($s->nombre_c == $teso->RFC_R) { //Coincide Nombre, se va a comparar monto y moneda.
-										echo "Entre aqui bien 30";
 										if ($s->montoP == $teso->MONTOP) { //Coinciden los montos, se va a comparar moneda
-											echo "Entre aqui bien 31";
 											if ($s->monedaP == $teso->MONEDAP) { //Coincide la moneda. Se va a similaridades.
-												echo "Entre aqui bien 32";
 												$simi = new Similaridades;
 												$simi->id_tt = $teso->id_tt;
 												$simi->RFC_R = $teso->RFC_R;
@@ -386,11 +342,8 @@ class ArchviosController extends Controller
 									}
 								}
 							} else { //No existe en Tesoreria nombre o RFC, se procede a comparar monto y moneda.
-								echo "Entre aqui bien 33";
 								if ($s->montoP == $teso->MONTOP) { //Coinciden los montos, se va a comparar moneda
-									echo "Entre aqui bien 34";
 									if ($s->monedaP == $teso->MONEDAP) { //Coincide la moneda. Se va a similaridades.
-										echo "Entre aqui bien 35";
 										$simi = new Similaridades;
 										$simi->id_tt = $teso->id_tt;
 										$simi->RFC_R = $teso->RFC_R;
@@ -406,11 +359,9 @@ class ArchviosController extends Controller
 										$simi->FECHAPAG = $teso->FECHAPAG;
 										$simi->save();
 									} else {
-										echo "Entre aqui bien 36";
 										$res = "Las monedas no coinciden";
 									}
 								} else {
-									echo "Entre aqui bien 37";
 									$res = "Los montos no coinciden";
 								}
 							}
@@ -423,7 +374,6 @@ class ArchviosController extends Controller
 							->get();
 
 						if ($conteo == 0) {
-							echo "Entre aqui bien 38";
 							$incidencia = new Incidencias;
 							$incidencia->id_pago = $s->id_pago;
 							$incidencia->clearing_document = $s->clearing_document;
@@ -461,14 +411,12 @@ class ArchviosController extends Controller
 								->whereRaw(DB::raw('(' . $busquedaSAP . ')'))
 								->update(["timbrado" => "No existe relación de montos y monedas entre tesoreria y SAP"]);
 						} elseif ($conteo == 1) {
-							echo "Entre aqui bien 39";
 							$cfdirels = DB::table("credito")
 								->where('clearing_document', '=', $s->clearing_document)
 								->whereRaw(DB::raw('(' . $busquedaCred . ')'))
 								->count();
 
 							if ($cfdirels > 0) {
-								echo "Entre aqui bien 40";
 								$cfdirels = DB::table("credito")
 									->where('clearing_document', '=', $s->clearing_document)
 									->whereRaw(DB::raw('(' . $busquedaCred . ')'))
@@ -477,7 +425,6 @@ class ArchviosController extends Controller
 								$repetidos = false;
 
 								foreach ($cfdirels as $cfdi) {
-									echo "Entre aqui bien 41";
 									$solo_uno = DB::table('credito')
 										->where('folio', '=', $cfdi->folio)
 										->where('clearing_document', '=', $cfdi->clearing_document)
@@ -485,7 +432,6 @@ class ArchviosController extends Controller
 										->count();
 
 									if ($solo_uno > 1) {
-										echo "Entre aqui bien 42";
 										$solo_uno = DB::table('credito')
 											->where('folio', '=', $cfdi->folio)
 											->where('imppagado', '=', $cfdi->imppagado)
@@ -500,27 +446,23 @@ class ArchviosController extends Controller
 											->count();
 
 										if ($solo_uno > 1) {
-											echo "Entre aqui bien 43";
 											$repetidos = true;
 										}
 									}
 								}
 
 								if ($repetidos == false) {
-									echo "Entre aqui bien 44";
 									$saldadoCredito = false;
 									$numSalCred = "";
 									$saldadoLiquidadas = false;
 									$numSalLiqu = "";
 									foreach ($cfdirels as $cfdi) {
-										echo "Entre aqui bien 45";
 										$ultimosC = DB::table("credito")
 											->where('clearing_document', '<', $cfdi->clearing_document)
 											->where('folio', '=', $cfdi->folio)
 											//->whereRaw(DB::raw('('.$busquedaSAP.')'))
 											->count();
 										if ($ultimosC > 0) {
-											echo "Entre aqui bien 46";
 											$ultimoCredito = DB::table("credito")
 												->where('clearing_document', '<', $cfdi->clearing_document)
 												->where('folio', '=', $cfdi->folio)
@@ -528,21 +470,18 @@ class ArchviosController extends Controller
 												->orderBy("id_cre", "desc")
 												->first();
 											if ($ultimoCredito->impsaldoins == 0) {
-												echo "Entre aqui bien 47";
 												$saldadoCredito = true;
 												$numSalCred .= $cfdi->folio . ",";
 											}
 										}
 									}
 									foreach ($cfdirels as $cfdi) {
-										echo "Entre aqui bien 48";
 										$ultimosL = DB::table("facturas_liquidadas")
 											->where('clearing_document', '<', $cfdi->clearing_document)
 											->where('folio', '=', $cfdi->folio)
 											//->whereRaw(DB::raw('('.$busquedaSAP.')'))
 											->count();
 										if ($ultimosL > 0) {
-											echo "Entre aqui bien 49";
 											$ultimoLiquidada = DB::table("facturas_liquidadas")
 												->where('clearing_document', '<', $cfdi->clearing_document)
 												->where('folio', '=', $cfdi->folio)
@@ -550,14 +489,12 @@ class ArchviosController extends Controller
 												->orderBy("id_cre", "desc")
 												->first();
 											if ($ultimoLiquidada->impsaldoins == 0) {
-												echo "Entre aqui bien 50";
 												$saldadoLiquidadas = true;
 												$numSalLiqu .= $cfdi->folio . ",";
 											}
 										}
 									}
 									if ($saldadoCredito == false && $saldadoLiquidadas == false) {
-										echo "Entre aqui bien 51";
 										$complemento = new Complemento;
 										$complemento->id_pago = $s->id_pago;
 										$complemento->clearing_document = $s->clearing_document;
@@ -599,9 +536,6 @@ class ArchviosController extends Controller
 										$complemento->timbrado = "1";
 										$complemento->id_pro = $procesoNuevo;
 										$complemento->id_es = $s->id_es;
-										$complemento->USOCFDI = $s->USOCFDI;
-										$complemento->TASAIVA = $s->TASAIVA;
-										$complemento->TASARETENCION = $s->TASARETENCION;
 										$complemento->save();
 
 										DB::table("pago")
@@ -615,7 +549,6 @@ class ArchviosController extends Controller
 										DB::table("similaridades")
 											->delete();
 									} else {
-										echo "Entre aqui bien 52";
 										$incidencia = new Incidencias;
 										$incidencia->id_pago = $s->id_pago;
 										$incidencia->clearing_document = $s->clearing_document;
@@ -654,7 +587,6 @@ class ArchviosController extends Controller
 											->update(["timbrado" => "Las siguientes facturas ya fueron liquidadas: " . $numSalCred . $numSalLiqu]);
 									}
 								} else {
-									echo "Entre aqui bien 53";
 									$incidencia = new Incidencias;
 									$incidencia->id_pago = $s->id_pago;
 									$incidencia->clearing_document = $s->clearing_document;
@@ -695,14 +627,12 @@ class ArchviosController extends Controller
 										->delete();
 								}
 							} else {
-								echo "Entre aqui bien 54";
 								$liquidadas = DB::table("facturas_liquidadas")
 									->where('clearing_document', '=', $s->clearing_document)
 									->whereRaw(DB::raw('(' . $busquedaSAP . ')'))
 									->count();
 
 								if ($liquidadas > 0) {
-									echo "Entre aqui bien 55";
 									$saldadoCredito = false;
 									$numSalCred = "";
 									$saldadoLiquidadas = false;
@@ -787,9 +717,6 @@ class ArchviosController extends Controller
 										$complemento->timbrado = "1";
 										$complemento->id_pro = $procesoNuevo;
 										$complemento->id_es = $s->id_es;
-										$complemento->USOCFDI = $s->USOCFDI;
-										$complemento->TASAIVA = $s->TASAIVA;
-										$complemento->TASARETENCION = $s->TASARETENCION;
 										$complemento->save();
 
 										DB::table("pago")
@@ -1096,9 +1023,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("pago")
@@ -1153,9 +1077,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalCred . $numSalLiqu;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("pago")
@@ -1294,9 +1215,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("pago")
@@ -1351,9 +1269,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalCred . $numSalLiqu;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("pago")
@@ -1674,9 +1589,6 @@ class ArchviosController extends Controller
 									$complemento->timbrado = "1";
 									$complemento->id_pro = $procesoNuevo;
 									$complemento->id_es = $r->id_es;
-									$complemento->USOCFDI = $s->USOCFDI;
-									$complemento->TASAIVA = $s->TASAIVA;
-									$complemento->TASARETENCION = $s->TASARETENCION;
 									$complemento->save();
 
 									DB::table("incidencias")
@@ -1790,9 +1702,6 @@ class ArchviosController extends Controller
 									$complemento->timbrado = "1";
 									$complemento->id_pro = $procesoNuevo;
 									$complemento->id_es = $r->id_es;
-									$complemento->USOCFDI = $s->USOCFDI;
-									$complemento->TASAIVA = $s->TASAIVA;
-									$complemento->TASARETENCION = $s->TASARETENCION;
 									$complemento->save();
 
 									DB::table("incidencias")
@@ -1953,9 +1862,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -1994,9 +1900,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2035,9 +1938,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2076,9 +1976,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2213,9 +2110,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2253,9 +2147,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2294,9 +2185,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2335,9 +2223,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2508,9 +2393,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2549,9 +2431,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2590,9 +2469,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2631,9 +2507,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2768,9 +2641,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2809,9 +2679,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2850,9 +2717,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -2891,9 +2755,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $r->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -3043,9 +2904,6 @@ class ArchviosController extends Controller
 				$complemento->nombre_e = $r->nombre_e;
 				$complemento->timbrado = "1";
 				$complemento->id_pro = $procesoNuevo;
-				$complemento->USOCFDI = $s->USOCFDI;
-				$complemento->TASAIVA = $s->TASAIVA;
-				$complemento->TASARETENCION = $s->TASARETENCION;
 				$complemento->save();
 			}
 		} else {
@@ -3091,9 +2949,6 @@ class ArchviosController extends Controller
 						$complemento->timbrado = "1";
 						$complemento->id_pro = $procesoNuevo;
 						$complemento->id_es = $s->id_es;
-						$complemento->USOCFDI = $s->USOCFDI;
-						$complemento->TASAIVA = $s->TASAIVA;
-						$complemento->TASARETENCION = $s->TASARETENCION;
 						$complemento->save();
 
 						DB::table("pago")
@@ -3374,9 +3229,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("pago")
@@ -3695,9 +3547,6 @@ class ArchviosController extends Controller
 												$complemento->timbrado = "1";
 												$complemento->id_pro = $procesoNuevo;
 												$complemento->id_es = $s->id_es;
-												$complemento->USOCFDI = $s->USOCFDI;
-												$complemento->TASAIVA = $s->TASAIVA;
-												$complemento->TASARETENCION = $s->TASARETENCION;
 												$complemento->save();
 
 												DB::table("pago")
@@ -3752,9 +3601,6 @@ class ArchviosController extends Controller
 												$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 												$complemento->id_pro = $procesoNuevo;
 												$complemento->id_es = $s->id_es;
-												$complemento->USOCFDI = $s->USOCFDI;
-												$complemento->TASAIVA = $s->TASAIVA;
-												$complemento->TASARETENCION = $s->TASARETENCION;
 												$complemento->save();
 
 												DB::table("pago")
@@ -4149,9 +3995,6 @@ class ArchviosController extends Controller
 									$complemento->timbrado = "1";
 									$complemento->id_pro = $procesoNuevo;
 									$complemento->id_es = $s->id_es;
-									$complemento->USOCFDI = $s->USOCFDI;
-									$complemento->TASAIVA = $s->TASAIVA;
-									$complemento->TASARETENCION = $s->TASARETENCION;
 									$complemento->save();
 
 									DB::table("incidencias")
@@ -4190,9 +4033,6 @@ class ArchviosController extends Controller
 									$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 									$complemento->id_pro = $procesoNuevo;
 									$complemento->id_es = $s->id_es;
-									$complemento->USOCFDI = $s->USOCFDI;
-									$complemento->TASAIVA = $s->TASAIVA;
-									$complemento->TASARETENCION = $s->TASARETENCION;
 									$complemento->save();
 
 									DB::table("pago")
@@ -4336,9 +4176,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -4377,9 +4214,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -4418,9 +4252,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -4459,9 +4290,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -4521,9 +4349,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -4562,9 +4387,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -4603,9 +4425,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -4644,9 +4463,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -4806,9 +4622,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -4847,9 +4660,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -4888,9 +4698,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -4929,9 +4736,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -4991,9 +4795,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -5032,9 +4833,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -5073,9 +4871,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -5114,9 +4909,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -5276,9 +5068,6 @@ class ArchviosController extends Controller
 					$complemento->nombre_e = $r->nombre_e;
 					$complemento->timbrado = "1";
 					$complemento->id_pro = $procesoNuevo;
-					$complemento->USOCFDI = $s->USOCFDI;
-					$complemento->TASAIVA = $s->TASAIVA;
-					$complemento->TASARETENCION = $s->TASARETENCION;
 					$complemento->save();
 				}
 
@@ -5303,7 +5092,7 @@ class ArchviosController extends Controller
 				]);
 			$queactualizaDB = "actualizado";
 		} catch (\Exception $th) {
-			echo 'Aqui esta el error:',  $th->getMessage();
+			$queactualizaDB = $th->getMessage();
 		}
 
 
@@ -5311,9 +5100,6 @@ class ArchviosController extends Controller
 			"respuesta" => 1,
 			"actulizoDB" => $queactualizaDB
 		]);
-		} catch (\Exception $th) {
-			echo 'Aqui esta el error:',  $th->getMessage();
-		}
 	}
 
 	public function verIntegrados()
@@ -5823,7 +5609,7 @@ class ArchviosController extends Controller
 
 	public function integrarComplementoEsp(Request $request)
 	{
-		echo 'Entre';
+
 		$busquedaSAP = "";
 		$busquedaTeso = "";
 		$bs = "";
@@ -6000,9 +5786,6 @@ class ArchviosController extends Controller
 						$complemento->timbrado = "1";
 						$complemento->id_pro = $procesoNuevo;
 						$complemento->id_es = $s->id_es;
-						$complemento->USOCFDI = $s->USOCFDI;
-						$complemento->TASAIVA = $s->TASAIVA;
-						$complemento->TASARETENCION = $s->TASARETENCION;
 						$complemento->save();
 
 						DB::table("pago")
@@ -6291,9 +6074,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("pago")
@@ -6613,9 +6393,6 @@ class ArchviosController extends Controller
 												$complemento->timbrado = "1";
 												$complemento->id_pro = $procesoNuevo;
 												$complemento->id_es = $s->id_es;
-												$complemento->USOCFDI = $s->USOCFDI;
-												$complemento->TASAIVA = $s->TASAIVA;
-												$complemento->TASARETENCION = $s->TASARETENCION;
 												$complemento->save();
 
 												DB::table("pago")
@@ -6670,9 +6447,6 @@ class ArchviosController extends Controller
 												$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 												$complemento->id_pro = $procesoNuevo;
 												$complemento->id_es = $s->id_es;
-												$complemento->USOCFDI = $s->USOCFDI;
-												$complemento->TASAIVA = $s->TASAIVA;
-												$complemento->TASARETENCION = $s->TASARETENCION;
 												$complemento->save();
 
 												DB::table("pago")
@@ -7013,9 +6787,6 @@ class ArchviosController extends Controller
 									$complemento->timbrado = "1";
 									$complemento->id_pro = $procesoNuevo;
 									$complemento->id_es = $s->id_es;
-									$complemento->USOCFDI = $s->USOCFDI;
-									$complemento->TASAIVA = $s->TASAIVA;
-									$complemento->TASARETENCION = $s->TASARETENCION;
 									$complemento->save();
 
 									DB::table("incidencias")
@@ -7054,9 +6825,6 @@ class ArchviosController extends Controller
 									$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 									$complemento->id_pro = $procesoNuevo;
 									$complemento->id_es = $s->id_es;
-									$complemento->USOCFDI = $s->USOCFDI;
-									$complemento->TASAIVA = $s->TASAIVA;
-									$complemento->TASARETENCION = $s->TASARETENCION;
 									$complemento->save();
 
 									DB::table("pago")
@@ -7201,9 +6969,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7242,9 +7007,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7283,9 +7045,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7324,9 +7083,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7386,9 +7142,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7427,9 +7180,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7468,9 +7218,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7509,9 +7256,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7672,9 +7416,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7713,9 +7454,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7754,9 +7492,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7795,9 +7530,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "1";
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7857,9 +7589,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7898,9 +7627,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7939,9 +7665,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -7980,9 +7703,6 @@ class ArchviosController extends Controller
 											$complemento->timbrado = "Las siguientes facturas ya fueron liquidadas: " . $numSalParc;
 											$complemento->id_pro = $procesoNuevo;
 											$complemento->id_es = $s->id_es;
-											$complemento->USOCFDI = $s->USOCFDI;
-											$complemento->TASAIVA = $s->TASAIVA;
-											$complemento->TASARETENCION = $s->TASARETENCION;
 											$complemento->save();
 
 											DB::table("incidencias")
@@ -8142,9 +7862,6 @@ class ArchviosController extends Controller
 					$complemento->nombre_e = $r->nombre_e;
 					$complemento->timbrado = "1";
 					$complemento->id_pro = $procesoNuevo;
-					$complemento->USOCFDI = $s->USOCFDI;
-					$complemento->TASAIVA = $s->TASAIVA;
-					$complemento->TASARETENCION = $s->TASARETENCION;
 					$complemento->save();
 				}
 

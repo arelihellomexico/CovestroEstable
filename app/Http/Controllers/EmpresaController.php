@@ -64,9 +64,6 @@ class EmpresaController extends Controller
       'version_fiscal' => $request ->get('version_fiscal'),
       'metpago' => $request ->get('metpago'),
       "usar_credito" => $usar,
-      'USOCFDI' => $request ->get('USOCFDI'),
-      'TASAIVA' => $request ->get('TASAIVA'),
-      'TASARETENCION' => $request ->get('TASARETENCION'),
     ]);
 
       if($datos){

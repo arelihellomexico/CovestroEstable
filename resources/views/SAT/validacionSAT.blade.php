@@ -99,10 +99,6 @@
           <th class="text-muted text-center txt-thead"><small>Folio de la factura</small></th>
           <th class="text-muted text-center txt-thead"><small>ID del documento</small></th>
           <th class="text-muted text-center txt-thead"><small>Parcialidades</small></th>
-          <th class="text-muted text-center txt-thead"><small>Usocfdi</small></th>
-          <th class="text-muted text-center txt-thead"><small>Regimen</small></th>
-          <th class="text-muted text-center txt-thead"><small>Tasa iva</small></th>
-          <th class="text-muted text-center txt-thead"><small>Tasa retencion</small></th>
           <th class="text-muted text-center txt-thead"><small>Errores</small></th>
         </tr>
       </thead>
@@ -349,17 +345,13 @@
       '<th class="text-muted text-center txt-thead"><small>Folio de la factura</small></th>' +
       '<th class="text-muted text-center txt-thead"><small>ID del documento</small></th>' +
       '<th class="text-muted text-center txt-thead"><small>Parcialidades</small></th>' +
-      '<th class="text-muted text-center txt-thead"><small>Usocfdi</small></th>' +
-      '<th class="text-muted text-center txt-thead"><small>Regimen</small></th>' +
-      '<th class="text-muted text-center txt-thead"><small>Tasa iva</small></th>' +
-      '<th class="text-muted text-center txt-thead"><small>Tasa retencion</small></th>' +
       '<th class="text-muted text-center txt-thead"><small>Errores</small></th>' +
       '</tr>' +
       '</thead>' +
       '<tbody id="cuerpo">';
     var reporte = "";
     if ($("#layout").val() != "") {
-      console.log("El valor de archivo es " + $("#file").val())
+      //console.log("El valor de archivo es " + $("#file").val())
       if ($("#file").val() != null && $("#file").val() != "") {
         $("#archivo1").val($("#file").val());
         $("#archivo2").val($("#file").val());
@@ -378,7 +370,6 @@
             if (data.length < 1) {
               console.log("No habia datos en tu archivo de excel.");
             } else {
-              console.log('Entre aqui a sucessssss ')
               if (data.respuesta == 2) {
                 dm = data.mensaje;
                 cod_error = dm.split(":");
@@ -544,10 +535,6 @@
                   } else {
                     contenido += '<td class="text-center text-muted txt-tbody"></td>';
                   }
-                  contenido += '<td class="text-center text-muted txt-tbody">' + data[i].USOCFDI + '</td>';
-                  contenido += '<td class="text-center text-muted txt-tbody">' + data[i].REGIMEN + '</td>';
-                  contenido += '<td class="text-center text-muted txt-tbody">' + data[i].TASAIVA + '</td>';
-                  contenido += '<td class="text-center text-muted txt-tbody">' + data[i].TASARETENCION + '</td>';
                   contenido += '<td class="text-center text-muted txt-tbody">' + reporte + '</td>';
                   contenido += '</tr>';
                 }
@@ -682,9 +669,7 @@
     if (incidencias == true) {
       $("#modal-verifica").modal("show");
       incidencias = false;
-      console.log("Entre bien");
     } else {
-      console.log("Entre bien");
       $.ajax({
         url: 'guardarSAP',
         type: 'post',
@@ -693,7 +678,6 @@
         contentType: false,
         beforeSend: function() {
           $("#modal-cargando").modal('show');
-          console.log("Entre bien 2");
         },
         success: function(data) {
           contenido += '<td class="text-muted" name="FRCCTAORD"></td>' +
@@ -753,7 +737,7 @@
   }
 
   function guardarDatos() {
-    console.log("entro a la funcion correctamente 1111");
+    console.log("entro a la funcion correctamente");
     var form = new FormData(document.getElementById('cosas2'));
     var contenido = "";
     $.ajax({
@@ -816,7 +800,7 @@
         }
       },
       error: function() {
-        console.log("Error al guardar la prueba posible error en el archivo ValidacionSapcontroler.php 111")
+        console.log("Error al guardar la prueba posible error en el archivo ValidacionSapcontroler.php")
         $("#modal-cargando").modal("hide");
         $("#modal-error").modal("show");
       }

@@ -22,9 +22,6 @@ class Facturas extends Model
         "residencia",
         "clearings",
         "monto_mxn",
-        "USOCFDI",
-        "TASAIVA",
-        "TASARETENCION"
     ];
 
     public $timestamps = false;

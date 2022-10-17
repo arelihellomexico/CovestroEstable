@@ -258,13 +258,17 @@
             </div>
             <div class="col-4 col-xs-4 col-sm-4 col-md-2 col-lg-2 col-md-offset-5 col-lg-offset-5">
           @if($c == 0)
-            <button type="submit" class="button btn-blue" name="button">Integrar1</button>
+            <button type="submit" class="button btn-blue" name="button">Integrar</button>
           @else
             @if ($proceso->integracion == 1)
-              <button type="submit" class="button btn-blue" name="button">Integrar2</button>
-
+              <button type="submit" class="button btn-blue" name="button">Integrar</button>
+            @elseif($proceso->obtencion == 1)
+              <a href="{{ url("/trafico") }}"><button type="button" class="button btn-link" name="button">Hay un proceso actual corriendo. Click aquí para continuar con el.</button></a>
+            @elseif($proceso->timbrado == 1)
+            <a href="{{ url("/integracion
+            ") }}"><button type="button" class="button btn-link" name="button">Hay un proceso actual corriendo. Click aquí para continuar con el.</button></a>
             @else
-              <button type="submit" class="button btn-blue" name="button">Integrar3</button>
+              <button type="submit" class="button btn-blue" name="button">Integrar</button>
             @endif
           @endif
             </div>
@@ -1168,10 +1172,9 @@
               $("#contMisArchivos").append(tabla); 
               $("#results").html(inputs);
       }
-
       function integrar(){
-        try {
-          if(contadorTeso == 0 && contadorSAP == 0){
+
+        if(contadorTeso == 0 && contadorSAP == 0){
           $("#modal-no-archivo").modal('show');
         }
         else{
@@ -1180,9 +1183,7 @@
           }
           else{
             //window.location.href = "integracion";
-
             var form = new FormData(document.getElementById('formInt'));
-            console.log("Entre aqui")
             $.ajax({
               url: 'integrando',
               type: 'post',
@@ -1190,33 +1191,23 @@
               processData: false,
               contentType: false,
               beforeSend: function(){
-              console.log("Entre aqui 2")
                 $("#modal-cargando").modal('show');
               },
-              //---------------------------------------------------\\
               success: function (data) {
-              console.log("Entre aqui 3")
                 console.log(data);
                 if(data.actulizoDB = "actualizado"){
-                  console.log("Entre aqui 4")
                   window.location.href = "integracion";
                 } else {
-                  console.log("Entre aqui 5 ")
                   $("#modal-error").modal('show');
                 }
               },
-              //---------------------------------------------------\\
               error: function () {
-                console.log("Entre aqui 6")
                 $("#modal-cargando").modal('hide');
                 $("#modal-error").modal('show');
               }
             });
 
           }
-        }
-        } catch (error) {
-          console.log("Este es el error" + error)
         }
       }
     </script>
